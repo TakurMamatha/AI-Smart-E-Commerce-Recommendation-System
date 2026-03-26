@@ -7,42 +7,26 @@ function App() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
 
-// const fetchRecommendations = () => {
-//   if (!product) {
-//     alert("Enter product");
-//     return;
-//   }
+  const fetchRecommendations = () => {
+    if (!product) {
+      alert("Enter product");
+      return;
+    }
 
-//   axios.get(`http://127.0.0.1:5000/recommend?product=${product}`)
-//     .then(res => {
-//       console.log("API Response:", res.data);  // 👈 DEBUG
-//       setProducts(res.data);
-//     })
-//     .catch(err => console.error(err));
-// };
-const fetchRecommendations = () => {
-  if (!product) {
-    alert("Enter product");
-    return;
-  }
+    setLoading(true);
 
-  setLoading(true);
+    axios.get(`http://127.0.0.1:5000/recommend?product=${product}`)
+      .then(res => {
+        console.log("API Response:", res.data);
+        setProducts(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
+  };
 
-  // axios.get(`http://127.0.0.1:5000/recommend?product=${product}`)
-  //   .then(res => {
-  //     setProducts(res.data);
-  //     setLoading(false);
-  //   })
-  axios.get(`http://127.0.0.1:5000/recommend?product=${product}`)
-  .then(res => {
-    console.log("API Response:", res.data);   // ✅ CORRECT PLACE
-    setProducts(res.data);
-  })
-    .catch(err => {
-      console.error(err);
-      setLoading(false);
-    });
-};
   return (
     <div className="container">
       <h1>🛒 AI Product Recommendations</h1>
@@ -56,30 +40,28 @@ const fetchRecommendations = () => {
 
       <button onClick={fetchRecommendations}>Search</button>
 
-      {/* <div className="grid">
-        {products.map((p, i) => (
-          <div className="card" key={i}>
-            <img src={`https://source.unsplash.com/200x200/?${p}`} alt={p} />
-            <h3>{p}</h3>
-            <p>₹{Math.floor(Math.random() * 5000) + 500}</p>
-  <button>Add to Cart</button>
-          </div>
-        ))}
-      </div> */}
+      {/* ✅ FIXED UI */}
       {loading ? (
-  <p>Loading...</p>
-) : (
-  <div className="grid">
-    {products.map((p, i) => (
-      <div className="card" key={i}>
-        <img src={`https://source.unsplash.com/200x200/?${p}`} alt={p} />
-        <h3>{p}</h3>
-        <p>₹{Math.floor(Math.random() * 5000) + 500}</p>
-        <button>Add to Cart</button>
-      </div>
-    ))}
-  </div>
-)}
+        <p>Loading...</p>
+      ) : products.length > 0 ? (
+        products[0] === "No product found" ? (
+          <p>No product found</p>
+        ) : (
+          <div className="grid">
+            {products.map((p, i) => (
+              <div className="card" key={i}>
+                <img
+                  src={`https://source.unsplash.com/200x200/?${p}`}
+                  alt={p}
+                />
+                <h3>{p}</h3>
+                <p>₹{Math.floor(Math.random() * 5000) + 500}</p>
+                <button>Add to Cart</button>
+              </div>
+            ))}
+          </div>
+        )
+      ) : null}
     </div>
   );
 }
